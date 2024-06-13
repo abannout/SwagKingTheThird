@@ -10,12 +10,13 @@ import robotService, {
   getAllRobots,
   mineResource,
 } from "./robot/usecase/index.js"
-import planetService from "./planet/usecase/index.js"
-import { moveRobot } from "./robot/application/gateways/command/move-robot.js"
 import { mineResources } from "./robot/application/gateways/command/mine-robot.js"
 import { buyUpdates } from "./trading/application/gateways/commands/upgrade-robot.js"
 import { sellResource } from "./trading/application/gateways/commands/sell-resources.js"
 import Robot from "./robot/entity/robot.js"
+import planetService from "./planet/usecase/index.js"
+import { moveRobot } from "./robot/application/gateways/command/move-robot.js"
+import { listenerCount } from "process"
 
 export default function strategy() {
   handleEventsForBank()
@@ -29,15 +30,15 @@ function theHundredRoundStrategy() {
     const { payload } = event
 
     if (payload.roundStatus === "started") {
-      let robotList = await getAllRobots()
       if (payload.roundNumber < 4) {
         buyRobots(5)
       }
+      let robotList = await getAllRobots()
       if (payload.roundNumber > 3) {
         buyRobotsStrategy()
         updateMiningLevelForRobots()
         robotList = await mineResourcesOrMoveRobots(robotList)
-        // robotList = await moveRobotWithoutResourcesRandomly(robotList)
+        robotList = await moveRobotWithoutResourcesRandomly(robotList)
         await sellResourcesWithFullInventory()
       }
     }
@@ -64,15 +65,34 @@ async function mineResourcesOrMoveRobots(robotList: Robot[]): Promise<Robot[]> {
     await mineResources(robot.id)
     logger.info(`mining robot with id: ${robot.id}`)
   })
-  // const moveList = await robotService.moveRobot(robotList)
-  // moveList.forEach(async (robot) => {
-  //   const planetToMoveTo = await planetService.getPlanetToMoveTo(robot)
-  //   logger.info(
-  //     `Moving robot with id: ${robot.id} to Planet with id: ${planetToMoveTo}`
-  //   )
-  //   moveRobot(robot.id, planetToMoveTo)
-  // })
   return robotList.filter((robot) => !list.some((item) => item.id === robot.id))
+  // try {
+  //   const moveList = await robotService.moveRobot(robotList)
+  //   moveList.forEach(async (robot) => {
+  //     const planetToMoveTo = await planetService.getPlanetToMoveTo(robot)
+  //     logger.info(
+  //       `Moving robot with id: ${robot.id} to Planet with id: ${planetToMoveTo}`
+  //     )
+  //     moveRobot(robot.id, planetToMoveTo)
+  //   })
+  // } catch (error) {
+  //   logger.error({ error }, "ich haße info")
+  //   throw new Error("this is an errorrrr")
+  // }
+}
+async function moveRobotWithoutResourcesRandomly(
+  robotList: Robot[]
+): Promise<Robot[]> {
+  const robotToMove = await robotService.moveRobot(robotList)
+  if (!robotToMove || robotToMove.length <= 0) return []
+  robotToMove.forEach(async (robot) => {
+    const planetToMoveTo = await planetService.getPlanetToMoveTo(robot)
+    logger.info(
+      `Moving robot with id: ${robot.id} to Planet with id: ${planetToMoveTo}`
+    )
+    moveRobot(robot.id, planetToMoveTo)
+  })
+  return filterRobotList(robotList, robotToMove)
 }
 
 async function updateMiningLevelForRobots() {

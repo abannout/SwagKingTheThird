@@ -6,7 +6,13 @@ export function handleAddPlanet() {
   return async () => {
     relay.on("PlanetDiscovered", async (event, context) => {
       const { payload } = event
-      logger.info(`Planet with id: ${payload.planet} been discovered`)
+      logger.info(
+        `Planet with id: ${
+          payload.planet
+        } been discovered mit den Nachberen ${JSON.stringify(
+          payload.neighbours
+        )}`
+      )
 
       await addPlanet(payload)
     })

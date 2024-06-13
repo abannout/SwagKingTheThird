@@ -25,7 +25,7 @@ export function makeRobot(robot: RobotSpawned): Robot {
     alive: robot.robot.alive,
     player: robot.robot.player,
     planet: {
-      planetId: robot.robot.player,
+      planetId: robot.robot.planet.planetId,
       resourceType: robot.robot.planet.resourceType,
     },
     maxHealth: robot.robot.maxHealth,

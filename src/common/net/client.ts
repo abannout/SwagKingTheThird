@@ -66,6 +66,9 @@ export async function getPlayer(
   name: string,
   email: string
 ): Promise<ResCreatePlayer> {
+  logger.info(
+    `Requesting player ${name} with GET ${axios.defaults.baseURL}/players...`
+  )
   return axios
     .get<ResCreatePlayer>("/players", {
       params: {
@@ -74,6 +77,10 @@ export async function getPlayer(
       },
     })
     .then((res) => res.data)
+    .catch((rej) => {
+      logger.error({ rej }, "AHHHH")
+      throw new Error("AAAAAAAAAAAA")
+    })
 }
 
 export async function fetchOrUpdatePlayer(
