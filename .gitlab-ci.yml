@@ -1,17 +1,23 @@
 include:
   - project: "the-microservice-dungeon/devops-team/common-ci-cd"
     ref: "main"
-    file: "helm/package-publish.yaml"
+    file:
+      - "helm/package-publish.yaml"
+      - "container/image-dockerfile-publish.yaml"
 
-stages:
+stages: # TODO add needed Stages like test, build and so on
   - lint
   - test
-  - build
+  - build_container_push
   - helm
 
 variables:
   PATH_TO_CHART: "helm-chart"
-  CHART_NAME: "player-SwagKingTheThird" # ! TODO: Update to your player name
+  # TODO Change Player-Name to your Player
+  CHART_NAME: "player-swagkingthethird"
+  # TODO Change Image name to Player-Name (end of line)
+  CI_MSD_CONTAINER_REGISTRY: "registry.gitlab.com/the-microservice-dungeon/devops-team/msd-image-registry/player-swagkingthethird"
+
 
 
 lint:
@@ -37,17 +43,12 @@ test:
   script:
     - npm run test
 
-build:
-  stage: build
-  image: docker:latest
-  services:
-    - docker:dind
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-  script:
-    - tag=latest
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:${tag}" .
-    - docker push "$CI_REGISTRY_IMAGE:${tag}"
+# build stage use this, to build docker image from dockerfile and push it to our container registry
+container-image-publish:
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
 
 helm-package-publish:
   rules:

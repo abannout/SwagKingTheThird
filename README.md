@@ -41,7 +41,7 @@ The player can be configured using environment variables
 | RABBITMQ_PASSWORD    | admin                                         |
 | GAME_URL             | http://localhost:8080                         |
 | PLAYER_NAME          | layer-skeleton-typescript-nodejs              |
-| PLAYER_EMAIL         | player-skeleton-typescript-nodejs@example.com |
+| PLAYER_EMAIL         | player-swagkingthethird@example.com |
 | NODE_ENV             | development                                   |
 | LOGGING_DIR          | logs                                          |
 | LOGGING_LEVEL        | debug                                         |
