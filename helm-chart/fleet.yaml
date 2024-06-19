@@ -1,0 +1,9 @@
+namespace: "player-swagkingthethird" # TODO name of the namespace
+helm:
+  releaseName: "player-swagkingthethird" # TODO name of the name
+  targetNamespace: "player-swagkingthethird" # TODO name of the namespace
+  repo: "https://gitlab.com/api/v4/projects/42239222/packages/helm/stable"
+  chart: "player-swagkingthethird" # TODO Change to Chartname
+
+  # add values if needed (Values like in values.yaml)
+  #values:
