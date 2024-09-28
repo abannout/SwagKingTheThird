@@ -12,11 +12,10 @@
   "rules": {
     "semi": "off",
     "prettier/prettier": [
-      "error",
+      "warn",
       {
         "endOfLine": "auto"
       }
     ]
-    
   }
 }
