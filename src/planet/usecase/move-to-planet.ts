@@ -5,7 +5,6 @@ import { PlanetDependencies } from "../../common/dependencies/planet-dependency.
 import logger from "../../utils/logger.js"
 import { getPlanetNeighbours } from "./index.js"
 
-//export to higher service
 export default function makeMoveToPlanet({ planetRepo }: PlanetDependencies) {
   return async (robot: Robot): Promise<string> => {
     if (!robot) {
